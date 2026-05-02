@@ -52,10 +52,13 @@ export const updateTask = async (req: AuthRequest, res: Response) => {
         if (title !==undefined && title.trim().length < 3) {
             return res.status(400).json({ message: "Title must be at least 3 character" });
         }
-        if (dueDate && new Date(dueDate).getTime() < new Date().setHours(0, 0, 0, 0)) {
-            return res.status(400).json({ message: "Due date cannot be in the past" })
+        
+        const oldDate = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : null;
+        if (dueDate && dueDate !== oldDate) {
+            if (new Date(dueDate).getTime() < new Date().setHours(0, 0, 0, 0)) {
+                return res.status(400).json({ message: "New due date cannot be in the past" });
+            }
         }
-
 
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (updatedTask) {

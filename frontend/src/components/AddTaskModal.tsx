@@ -32,24 +32,6 @@ const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,task
 
     const [error,setError]=useState("");
 
-    // useEffect(() => {
-    //     if (taskToEdit) {
-    //         setFormData({
-    //             title: taskToEdit.title,
-    //             description: taskToEdit.description,
-    //             priority: taskToEdit.priority,
-    //             dueDate: taskToEdit.dueDate ? new Date(taskToEdit.dueDate).toISOString().split('T')[0] : ""
-    //         });
-    //     } else {
-    //         setFormData({
-    //             title: '',
-    //             description: "",
-    //             priority: "Medium",
-    //             dueDate: new Date().toISOString().split('T')[0]
-    //         });
-    //     }
-    // }, [taskToEdit, isOpen]);
-
     if(!isOpen) return null;
     const handleSubmit=async (e:React.FormEvent)=>{
         e.preventDefault();
@@ -58,7 +40,7 @@ const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,task
           setError("Title must be atleast 3 cheracters long");
           return;
         }
-        if(!taskToEdit){
+        
           const selectedDate=new Date(formData.dueDate);
           const today=new Date();
           today.setHours(0,0,0,0);
@@ -66,7 +48,7 @@ const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,task
             setError("Due date cannot be in the past");
             return;
           }
-        }
+        
         const token=localStorage.getItem('token');
         try{
             if (taskToEdit) {
