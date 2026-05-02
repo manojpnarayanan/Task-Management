@@ -11,14 +11,19 @@ import taskRoutes from './routes/taskRoutes'
 dotenv.config();
 const app=express();
 const httpServer=createServer(app)
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const io= new Server(httpServer,{
     cors:{
-        origin:"http://localhost:5174",
-        methods:["GET","POST","PUT","DELETE"]
+        origin:FRONTEND_URL,
+        methods:["GET","POST","PUT","DELETE"],
+        credentials:true
     }
 })
 
-app.use(cors());
+app.use(cors({
+    origin: FRONTEND_URL,
+    credentials: true
+}));
 app.use(express.json());
 
 app.use('/auth',authRoutes);

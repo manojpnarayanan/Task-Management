@@ -49,7 +49,7 @@ export const updateTask = async (req: AuthRequest, res: Response) => {
         if (task.user.toString() !== req.user?._id.toString()) {
             return res.status(401).json({ message: "Not authorized" })
         }
-        if (!title || title.trim().length < 3) {
+        if (title !==undefined && title.trim().length < 3) {
             return res.status(400).json({ message: "Title must be at least 3 character" });
         }
         if (dueDate && new Date(dueDate).getTime() < new Date().setHours(0, 0, 0, 0)) {
