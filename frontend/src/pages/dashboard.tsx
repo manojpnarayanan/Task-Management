@@ -216,7 +216,7 @@ const Dashboard = () => {
             <AddTaskModal
             key={taskToEdit?._id || 'new'}
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {setIsModalOpen(false);setTaskToEdit(null)}}
                 onTaskAdded={()=>{fetchTasks();fetchStats();}}
                 taskToEdit={taskToEdit}
             />
