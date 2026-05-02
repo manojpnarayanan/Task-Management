@@ -1,7 +1,6 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "type": "modulke",
   "main": "index.js",
   "scripts": {
     "dev":"tsx watch src/server.ts",
