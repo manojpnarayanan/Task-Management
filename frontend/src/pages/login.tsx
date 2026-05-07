@@ -15,7 +15,8 @@ const Login = () => {
     setError('');
     try {
       const response = await api.post('/auth/login', formData);
-      localStorage.setItem('token', response.data.token);
+      const { _id } = response.data;
+      localStorage.setItem('userId', _id);
       navigate('/dashboard');
     } catch (err) {
       if (axios.isAxiosError(err)) {

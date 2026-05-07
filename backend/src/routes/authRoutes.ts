@@ -12,6 +12,6 @@ const authCtrl=new authController(authService);
 
 router.post('/register',authCtrl.register);
 router.post('/login',authCtrl.login);
-
+router.post('/logout',authCtrl.logout);
 
 export default router;
