@@ -13,7 +13,7 @@ export class authController {
             res.cookie("token",result.token,{
                 httpOnly:true,
                 secure:process.env.NODE_ENV==='production',
-                sameSite:'strict',
+                sameSite:'none',
                 maxAge:maxAge,
             });
             const {token,...userData} =result;
@@ -33,7 +33,7 @@ export class authController {
             res.cookie("token",result.token,{
                 httpOnly:true,
                 secure:process.env.NODE_ENV === 'production',
-                sameSite:'strict',
+                sameSite:'none',
                 maxAge:maxAge
             })
             const {token,...userData}=result;
