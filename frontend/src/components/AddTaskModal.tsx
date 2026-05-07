@@ -83,7 +83,7 @@ const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,task
             <X className="w-6 h-6" />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4" noValidate>
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Task Title</label>
             <div className="relative">

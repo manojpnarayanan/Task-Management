@@ -29,9 +29,7 @@ const Dashboard = () => {
 
     const fetchTasks = async () => {
         try {
-            const response = await api.get('/task', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
+            const response = await api.get('/task');
             setTasks(response.data)
         } catch (error) {
             console.error("Error fetching data", error)
@@ -41,9 +39,7 @@ const Dashboard = () => {
     };
     const fetchStats=async()=>{
         try{
-            const response=await api.get('/task/stats',{
-                headers:{Authorization:`Bearer ${localStorage.getItem('token')}`}
-            });
+            const response=await api.get('/task/stats');
             setStats(response.data);
         }catch(error){
             console.error("Error fetching stats",error);
@@ -51,8 +47,12 @@ const Dashboard = () => {
     };
     useEffect(() => {
         const socket = io(import.meta.env.VITE_SOCKET_URL);
-        const user = JSON.parse(atob(localStorage.getItem('token')!.split(".")[1]));
-        socket.emit('join', user.id);
+        const userId = localStorage.getItem('userId');
+
+        if(userId){
+            socket.emit('join',userId);
+        }
+
         socket.on('taskCreated', (newTask) => {
             setTasks(prev => [newTask, ...prev]);
             fetchStats();
@@ -91,7 +91,7 @@ const Dashboard = () => {
     const toggleStatus = async (id: string, currentStatus: string) => {
         const nextStatus = currentStatus === 'Completed' ? "Todo" : "Completed";
         try {
-            await api.put(`/task/${id}`, { status: nextStatus }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+            await api.put(`/task/${id}`, { status: nextStatus });
             fetchTasks();
             fetchStats();
         } catch (error) {
@@ -113,7 +113,7 @@ const Dashboard = () => {
         })
         if (result.isConfirmed)
             try {
-                await api.delete(`/task/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+                await api.delete(`/task/${id}`);
                 setTasks(tasks.filter(t => t._id !== id));
                 fetchStats();
                 Swal.fire({
@@ -130,8 +130,14 @@ const Dashboard = () => {
     };
 
     const handleLogout = async () => {
-        localStorage.removeItem('token');
+        try{
+            await api.post('/auth/logout');
+        }catch(error){
+            console.error("Logout Error",error);
+        }finally{
+        localStorage.removeItem('userId');
         navigate('/login')
+        }
     }
     
 

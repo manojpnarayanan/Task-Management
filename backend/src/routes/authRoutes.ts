@@ -1,11 +1,17 @@
 import express from 'express';
-import {register,login} from '../controllers/authcontroller';
+import { authController } from '../controllers/authcontroller';
+import { AuthService } from '../services/authService';
+import { UserRepository } from '../repositories/userRepository';
 
 
 const router=express.Router();
 
-router.post('/register',register);
-router.post('/login',login);
+const userRepo=new UserRepository();
+const authService=new AuthService(userRepo);
+const authCtrl=new authController(authService);
 
+router.post('/register',authCtrl.register);
+router.post('/login',authCtrl.login);
+router.post('/logout',authCtrl.logout);
 
 export default router;

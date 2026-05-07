@@ -4,15 +4,15 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 
 const ProtectedRoute=({children}:{children:React.ReactNode})=>{
-  const token=localStorage.getItem("token");
-  if(!token){
-    return <Navigate to='/signup' replace/>
+  const userId =localStorage.getItem("userId");
+  if(!userId ){
+    return <Navigate to='/login' replace/>
   }
   return <>{children}</>
 }
 const PublicRoute=({children}:{children:React.ReactNode})=>{
-  const token=localStorage.getItem('token');
-  if(token){
+  const userId =localStorage.getItem('userId');
+  if(userId ){
     return <Navigate to='/dashboard'/>
   }
   return <>{children}</>

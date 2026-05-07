@@ -6,7 +6,7 @@ import {createServer} from 'http'
 import connectDB from "./models/DBconnect";
 import authRoutes from './routes/authRoutes'
 import taskRoutes from './routes/taskRoutes'
- 
+import cookieParser from "cookie-parser" 
 
 dotenv.config();
 const app=express();
@@ -25,6 +25,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/auth',authRoutes);
 app.use('/task',taskRoutes)
