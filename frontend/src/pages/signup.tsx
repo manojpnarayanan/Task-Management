@@ -3,28 +3,43 @@ import api from '../api/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
 
 const Signup = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading,setLoading]=useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // 1. Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       return setError('Passwords do not match');
     }
 
+    setLoading(true);
     try {
       await api.post('/auth/register', {
         name: formData.name,
         email: formData.email,
         password: formData.password
       });
+       await Swal.fire({
+        title:"Registration successfull",
+        text:"Redirecting to Login..",
+        icon:"success",
+        toast:true,
+        position:"top-end",
+        showConfirmButton:false,
+        timer:2000,
+        timerProgressBar:true,
+        background:"#0f172a",
+        color:'#fff'
+      })
       navigate('/login');
     } catch (err) {
       if(axios.isAxiosError(err)){
@@ -32,6 +47,8 @@ const Signup = () => {
       }else{
         setError("An unexpected error occurred")
       }
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -42,7 +59,7 @@ const Signup = () => {
         <p className="text-slate-400 mb-8">Start managing your tasks efficiently today.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          {/* Full Name */}
+          
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Full Name</label>
             <div className="relative">
@@ -57,7 +74,7 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Email */}
+        
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Email Address</label>
             <div className="relative">
@@ -72,7 +89,7 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Password with Toggle */}
+          
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Password</label>
             <div className="relative">
@@ -94,7 +111,7 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Confirm Password */}
+          
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Confirm Password</label>
             <div className="relative">
@@ -117,10 +134,21 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all mt-4 group shadow-lg shadow-sky-500/20"
-          >
-            Sign Up
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+      disabled={loading}
+      className={`w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all mt-4 group shadow-lg shadow-sky-500/20 ${loading ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
+    >
+      {loading ? (
+        <div className="flex items-center gap-2">
+           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+           Signing up...
+        </div>
+      ) : (
+        <>
+          Sign Up
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </>
+      )}
+
           </button>
         </form>
 
