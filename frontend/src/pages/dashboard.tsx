@@ -1,22 +1,15 @@
 import { useEffect, useState } from 'react';
-import api from '../api/auth';
 import { Plus, CheckCircle, Clock, Trash2, LogOut, Pencil } from 'lucide-react';
 import AddTaskModal from '../components/AddTaskModal';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { io } from 'socket.io-client';
 import TaskStats from '../components/TaskStats';
+import { taskService, } from '../api/task.Api';
+import type { Task } from '../api/task.Api';
+import { authService } from '../api/auth.Api';
 
 
-interface Task {
-    _id: string;
-    title: string;
-    description: string;
-    status: "Todo" | "In Progress" | "Completed";
-    priority: "Low" | "Medium" | "High";
-    dueDate:string;
-    createdAt: string;
-}
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -29,8 +22,9 @@ const Dashboard = () => {
 
     const fetchTasks = async () => {
         try {
-            const response = await api.get('/task');
-            setTasks(response.data)
+            // const response = await api.get('/task');
+            const task = await taskService.getTask();
+            setTasks(task);
         } catch (error) {
             console.error("Error fetching data", error)
         } finally {
@@ -39,8 +33,8 @@ const Dashboard = () => {
     };
     const fetchStats=async()=>{
         try{
-            const response=await api.get('/task/stats');
-            setStats(response.data);
+            const task=await taskService.getStats();
+            setStats(task);
         }catch(error){
             console.error("Error fetching stats",error);
         }
@@ -91,7 +85,8 @@ const Dashboard = () => {
     const toggleStatus = async (id: string, currentStatus: string) => {
         const nextStatus = currentStatus === 'Completed' ? "Todo" : "Completed";
         try {
-            await api.put(`/task/${id}`, { status: nextStatus });
+            // await api.put(`/task/${id}`, { status: nextStatus });
+            await taskService.updateTask(id,{status:nextStatus});
             fetchTasks();
             fetchStats();
         } catch (error) {
@@ -113,7 +108,7 @@ const Dashboard = () => {
         })
         if (result.isConfirmed)
             try {
-                await api.delete(`/task/${id}`);
+                await taskService.deleteTask(id);
                 setTasks(tasks.filter(t => t._id !== id));
                 fetchStats();
                 Swal.fire({
@@ -131,7 +126,8 @@ const Dashboard = () => {
 
     const handleLogout = async () => {
         try{
-            await api.post('/auth/logout');
+            // await api.post('/auth/logout');
+            await authService.logout()
         }catch(error){
             console.error("Logout Error",error);
         }finally{

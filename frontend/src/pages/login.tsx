@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import api from '../api/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, LogIn, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import { authService } from '../api/auth.Api';
+
+
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -14,9 +16,10 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await api.post('/auth/login', formData);
-      const { _id } = response.data;
-      localStorage.setItem('userId', _id);
+      // const response = await api.post('/auth/login', formData);
+      const response = await authService.login({email:formData.email,password:formData.password})
+      // const { _id } = response._id;
+      localStorage.setItem('userId', response._id);
       navigate('/dashboard');
     } catch (err) {
       if (axios.isAxiosError(err)) {
