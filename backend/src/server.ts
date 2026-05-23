@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from 'dotenv'
 import cors from 'cors'
+import { errorMiddleware } from "./middleware/error.middleware";
 import {Server} from 'socket.io'
 import {createServer} from 'http'
 import connectDB from "./models/DBconnect";
@@ -28,7 +29,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/auth',authRoutes);
-app.use('/task',taskRoutes)
+app.use('/task',taskRoutes);
+app.use(errorMiddleware);
 connectDB();
 
 io.on('connection',(socket)=>{

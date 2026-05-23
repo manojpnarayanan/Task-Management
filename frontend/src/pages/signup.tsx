@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import api from '../api/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { authService } from '../api/auth.Api';
+
 
 
 const Signup = () => {
@@ -23,11 +24,13 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      await api.post('/auth/register', {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password
-      });
+      // await api.post('/auth/register', {
+      //   name: formData.name,
+      //   email: formData.email,
+      //   password: formData.password
+      // });
+      const data = await authService.register(formData);
+      console.log(`User ${data} registerd successfully`);
        await Swal.fire({
         title:"Registration successfull",
         text:"Redirecting to Login..",

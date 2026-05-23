@@ -1,84 +1,93 @@
 import { useState } from "react";
-import api from "../api/auth";
-import { X,Type,AlignLeft,Calendar,Flag } from "lucide-react";
+import axios from "axios";
+import { X, Type, AlignLeft, Calendar, Flag } from "lucide-react";
+import { taskService } from "../api/task.Api";
 
 
 export interface Task {
-    _id: string;
-    title: string;
-    description: string;
-    status: "Todo" | "In Progress" | "Completed";
-    priority: "Low" | "Medium" | "High";
-    dueDate: string;
-    createdAt: string;
+  _id: string;
+  title: string;
+  description: string;
+  status: "Todo" | "In Progress" | "Completed";
+  priority: "Low" | "Medium" | "High";
+  dueDate: string;
+  createdAt: string;
 }
 
-interface AddTaskModalProps{
-    isOpen:boolean;
-    onClose:()=>void;
-    onTaskAdded:()=>void;
-    taskToEdit?:Task | null
+interface AddTaskModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onTaskAdded: () => void;
+  taskToEdit?: Task | null
 }
 
-const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,taskToEdit})=>{
-    const [formData, setFormData] = useState({
+const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onTaskAdded, taskToEdit }) => {
+  const [formData, setFormData] = useState({
     title: taskToEdit?.title || '',
     description: taskToEdit?.description || "",
     priority: (taskToEdit?.priority || "Medium") as "Low" | "Medium" | "High",
-    dueDate: taskToEdit?.dueDate 
-        ? new Date(taskToEdit.dueDate).toISOString().split('T')[0] 
-        : new Date().toISOString().split('T')[0]
-});
+    dueDate: taskToEdit?.dueDate
+      ? new Date(taskToEdit.dueDate).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0]
+  });
 
-    const [error,setError]=useState("");
+  const [error, setError] = useState("");
 
-    if(!isOpen) return null;
-    const handleSubmit=async (e:React.FormEvent)=>{
-        e.preventDefault();
-        setError("");
-        if(formData.title.trim().length<3){
-          setError("Title must be atleast 3 cheracters long");
-          return;
-        }
-        
-          const selectedDate=new Date(formData.dueDate);
-          const today=new Date();
-          today.setHours(0,0,0,0);
-          if(selectedDate < today){
-            setError("Due date cannot be in the past");
-            return;
-          }
-        
-        const token=localStorage.getItem('token');
-        try{
-            if (taskToEdit) {
-                await api.put(`/task/${taskToEdit._id}`, formData, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            } else {
-                await api.post('/task', formData, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            }
-
-            onTaskAdded();
-            onClose();
-            setFormData({
-                title:"",
-                description:"",
-                priority:"Medium",
-                dueDate:""
-            });
-        }catch(error){
-            console.error("Error adding task",error)
-        }
+  if (!isOpen) return null;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (formData.title.trim().length < 3) {
+      setError("Title must be atleast 3 cheracters long");
+      return;
     }
 
-    return (
+    const selectedDate = new Date(formData.dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      setError("Due date cannot be in the past");
+      return;
+    }
+
+
+    try {
+
+      const formattedData = {
+        ...formData,
+        dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : ""
+      }
+
+
+      if (taskToEdit) {
+        await taskService.updateTask(taskToEdit._id, formattedData);
+      } else {
+        await taskService.createTask(formattedData);
+      }
+
+      onTaskAdded();
+      onClose();
+      setFormData({
+        title: "",
+        description: "",
+        priority: "Medium",
+        dueDate: ""
+      });
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Something went Wrong")
+      } else {
+        setError("An un expected error occurred")
+      }
+      console.error("Error adding task", err)
+    }
+  }
+
+  return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
       <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">{taskToEdit?"Edit Task":"Create new Task"}</h2>
+          <h2 className="text-xl font-bold text-white">{taskToEdit ? "Edit Task" : "Create new Task"}</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
             <X className="w-6 h-6" />
           </button>
@@ -118,7 +127,7 @@ const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,task
                 <select
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:ring-2 focus:ring-sky-500 outline-none appearance-none"
                   value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: e.target.value  as "Low"| "Medium" | "High"})}
+                  onChange={(e) => setFormData({ ...formData, priority: e.target.value as "Low" | "Medium" | "High" })}
                 >
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
@@ -135,10 +144,10 @@ const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,task
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:ring-2 focus:ring-sky-500 outline-none transition-all cursor-pointer"
                   value={formData.dueDate}
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  onClick={(e)=>{
-                    const input=e.currentTarget;
-                    if(typeof input.showPicker === 'function'){
-                        input.showPicker()
+                  onClick={(e) => {
+                    const input = e.currentTarget;
+                    if (typeof input.showPicker === 'function') {
+                      input.showPicker()
                     }
                   }}
                 />
@@ -147,15 +156,15 @@ const AddTaskModal:React.FC<AddTaskModalProps>=({isOpen,onClose,onTaskAdded,task
           </div>
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm animate-pulse">
-        {error}
-    </div>
+              {error}
+            </div>
 
           )}
           <button
             type="submit"
             className="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl transition-all mt-4 shadow-lg shadow-sky-500/20 active:scale-95"
           >
-            {taskToEdit? 'Update Task' :'Add Task'}
+            {taskToEdit ? 'Update Task' : 'Add Task'}
           </button>
         </form>
       </div>
