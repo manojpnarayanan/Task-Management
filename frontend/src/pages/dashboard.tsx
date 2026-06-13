@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, CheckCircle, Clock, Trash2, LogOut, Pencil } from 'lucide-react';
+import { Plus, LogOut, } from 'lucide-react';
 import AddTaskModal from '../components/AddTaskModal';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
@@ -8,7 +8,7 @@ import TaskStats from '../components/TaskStats';
 import { taskService, } from '../api/task.Api';
 import type { Task } from '../api/task.Api';
 import { authService } from '../api/auth.Api';
-
+import TaskCard from '../components/TaskCard';
 
 
 const Dashboard = () => {
@@ -16,13 +16,13 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
-    const [stats,setStats]=useState({total:0,completed:0,overdue:0,pending:0})
+    const [stats, setStats] = useState({ total: 0, completed: 0, overdue: 0, pending: 0 })
 
     const navigate = useNavigate();
 
     const fetchTasks = async () => {
         try {
-            // const response = await api.get('/task');
+
             const task = await taskService.getTask();
             setTasks(task);
         } catch (error) {
@@ -31,37 +31,37 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
-    const fetchStats=async()=>{
-        try{
-            const task=await taskService.getStats();
+    const fetchStats = async () => {
+        try {
+            const task = await taskService.getStats();
             setStats(task);
-        }catch(error){
-            console.error("Error fetching stats",error);
+        } catch (error) {
+            console.error("Error fetching stats", error);
         }
     };
     useEffect(() => {
         const socket = io(import.meta.env.VITE_SOCKET_URL);
         const userId = localStorage.getItem('userId');
 
-        if(userId){
-            socket.emit('join',userId);
+        if (userId) {
+            socket.emit('join', userId);
         }
 
         socket.on('taskCreated', (newTask) => {
             setTasks(prev => [newTask, ...prev]);
             fetchStats();
             Swal.fire({
-        title: 'New Task Created!',
-        text: `Task: ${newTask.title}`,
-        icon: 'success',
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        background: '#0f172a',
-        color: '#fff'
-    });
+                title: 'New Task Created!',
+                text: `Task: ${newTask.title}`,
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#0f172a',
+                color: '#fff'
+            });
         })
         socket.on("taskUpdated", (updatedTask) => {
             setTasks(prev => prev.map(t => t._id === updatedTask._id ? updatedTask : t));
@@ -76,17 +76,17 @@ const Dashboard = () => {
 
     useEffect(() => {
         const initializeDashboard = async () => {
-        await fetchTasks();
-        await fetchStats();
-    };
-    initializeDashboard();
+            await fetchTasks();
+            await fetchStats();
+        };
+        initializeDashboard();
     }, [])
 
     const toggleStatus = async (id: string, currentStatus: string) => {
         const nextStatus = currentStatus === 'Completed' ? "Todo" : "Completed";
         try {
-            // await api.put(`/task/${id}`, { status: nextStatus });
-            await taskService.updateTask(id,{status:nextStatus});
+
+            await taskService.updateTask(id, { status: nextStatus });
             fetchTasks();
             fetchStats();
         } catch (error) {
@@ -125,17 +125,17 @@ const Dashboard = () => {
     };
 
     const handleLogout = async () => {
-        try{
-            // await api.post('/auth/logout');
+        try {
+
             await authService.logout()
-        }catch(error){
-            console.error("Logout Error",error);
-        }finally{
-        localStorage.removeItem('userId');
-        navigate('/login')
+        } catch (error) {
+            console.error("Logout Error", error);
+        } finally {
+            localStorage.removeItem('userId');
+            navigate('/login')
         }
     }
-    
+
 
     return (
         <div className="min-h-screen bg-slate-950 text-white p-8">
@@ -160,54 +160,25 @@ const Dashboard = () => {
             </div>
 
 
-            {!loading && <TaskStats stats={stats}/>}
+            {!loading && <TaskStats stats={stats} />}
             {loading ? (
                 <div className="flex justify-center py-20">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sky-500"></div>
                 </div>
             ) : (
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {tasks.map((task) => (
-                        <div key={task._id} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl hover:border-slate-700 transition-all group relative overflow-hidden">
-                            <div className="flex justify-between items-start mb-4">
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                    task.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 
-                                    task.status === 'In Progress' ? 'bg-sky-500/10 text-sky-400' : 
-                                    'bg-slate-800 text-slate-400'
-                                }`}> 
-                                    {task.status} 
-                                </span>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => { setTaskToEdit(task); setIsModalOpen(true); }}
-                                        className="text-slate-500 hover:text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                                    >
-                                        <Pencil className="w-5 h-5" />
-                                    </button>
-                                    <button onClick={() => deleteTask(task._id)} className="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            </div>
-                            <h3 className="text-xl font-semibold mb-2 group-hover:text-sky-400 transition-colors">{task.title}</h3>
-                            <p className="text-slate-400 text-sm mb-6 line-clamp-2 h-10">{task.description}</p>
-
-                            <div className="flex justify-between items-center pt-4 border-t border-slate-800/50">
-                                <div className="flex items-center gap-2 text-slate-500 text-xs">
-                                    <Clock className="w-4 h-4" />
-                                    {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-GB'):"No due Date"}
-                                </div>
-                                <button
-                                    onClick={() => toggleStatus(task._id, task.status)}
-                                    className={`p-2 rounded-lg transition-all active:scale-90 ${task.status === 'Completed' ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                                        }`}
-                                >
-                                    <CheckCircle className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
+                        <TaskCard
+                            key={task._id}
+                            task={task}
+                            onEdit={(task) => { setTaskToEdit(task); setIsModalOpen(true); }}
+                            onDelete={deleteTask}
+                            onToggleStatus={toggleStatus}
+                        />
                     ))}
                 </div>
+
             )}
             {tasks.length === 0 && !loading && (
                 <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-800">
@@ -216,10 +187,10 @@ const Dashboard = () => {
             )}
 
             <AddTaskModal
-            key={taskToEdit?._id || 'new'}
+                key={taskToEdit?._id || 'new'}
                 isOpen={isModalOpen}
-                onClose={() => {setIsModalOpen(false);setTaskToEdit(null)}}
-                onTaskAdded={()=>{fetchTasks();fetchStats();}}
+                onClose={() => { setIsModalOpen(false); setTaskToEdit(null) }}
+                onTaskAdded={() => { fetchTasks(); fetchStats(); }}
                 taskToEdit={taskToEdit}
             />
         </div>

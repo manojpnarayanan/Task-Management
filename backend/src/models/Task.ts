@@ -7,20 +7,22 @@ export interface ITask extends Document {
   priority: 'Low' | 'Medium' | 'High';
   dueDate: Date;
   user: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const taskSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String },
-  status: { 
-    type: String, 
-    enum: ['Todo', 'In Progress', 'Completed'], 
-    default: 'Todo' 
+  status: {
+    type: String,
+    enum: ['Todo', 'In Progress', 'Completed'],
+    default: 'Todo'
   },
-  priority: { 
-    type: String, 
-    enum: ['Low', 'Medium', 'High'], 
-    default: 'Medium' 
+  priority: {
+    type: String,
+    enum: ['Low', 'Medium', 'High'],
+    default: 'Medium'
   },
   dueDate: { type: Date },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true }

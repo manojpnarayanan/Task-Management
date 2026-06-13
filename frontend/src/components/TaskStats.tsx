@@ -44,11 +44,11 @@ const TaskStats: React.FC<StatsProps> = ({ stats }) => {
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                         </Pie>
-                        <Tooltip 
+                        <Tooltip
                             contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
                             itemStyle={{ color: '#fff' }}
                         />
-                        <Legend verticalAlign="bottom" height={36}/>
+                        <Legend verticalAlign="bottom" height={36} />
                     </PieChart>
                 </ResponsiveContainer>
             </div>

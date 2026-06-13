@@ -1,15 +1,15 @@
 import { HttpStatus } from "../constants/http-status";
 
 
-export class AppError extends Error{
-    public readonly statusCode:number;
-    public readonly isOperational:boolean;
+export class AppError extends Error {
+    public readonly statusCode: number;
+    public readonly isOperational: boolean;
 
-    constructor(message:string,statusCode:HttpStatus=HttpStatus.INTERNAL_SERVER_ERROR){
+    constructor(message: string, statusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR) {
         super(message);
-        this.statusCode=statusCode;
-        this.isOperational=true;
+        this.statusCode = statusCode;
+        this.isOperational = true;
 
-        Error.captureStackTrace(this,this.constructor)
+        Error.captureStackTrace(this, this.constructor)
     }
 }

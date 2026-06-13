@@ -5,7 +5,7 @@ import taskRepository from "../repositories/taskRepository";
 import { AuthMiddleware } from "../middleware/authMiddleware";
 import { UserRepository } from "../repositories/userRepository";
 import { AuthService } from "../services/authService";
-import { taskSchema,updateTaskSchema } from "../schema/task.schema";
+import { taskSchema, updateTaskSchema, deleteTaskSchema } from "../schema/task.schema";
 import { validate } from "../middleware/validation.middleware";
 
 
@@ -24,6 +24,6 @@ router.get('/stats', taskCtrl.getTaskStats)
 router.get("/", taskCtrl.getTask);
 router.post('/', validate(taskSchema), taskCtrl.createTask)
 router.put('/:id', validate(updateTaskSchema), taskCtrl.updateTask)
-router.delete('/:id', taskCtrl.deleteTask)
+router.delete('/:id', validate(deleteTaskSchema), taskCtrl.deleteTask)
 
 export default router

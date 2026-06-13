@@ -16,7 +16,7 @@ export const validate = (schema: ZodObject<ZodRawShape>) =>
             if (error instanceof ZodError) {
                 return res.status(HttpStatus.BAD_REQUEST).json({
                     success: false,
-                    message:error.issues[0].message,
+                    message: error.issues[0].message,
                     errors: error.issues.map((issue: ZodIssue) => ({
                         path: issue.path.map(p => p.toString()).join('.'),
                         message: issue.message

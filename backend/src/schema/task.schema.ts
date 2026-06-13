@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { objectIdParamSchema } from "./common.schema";
 
 export const taskSchema = z.object({
   body: z.object({
@@ -10,6 +11,9 @@ export const taskSchema = z.object({
   }),
 });
 
-export const updateTaskSchema=z.object({
-  body:taskSchema.shape.body.partial()
-})
+export const updateTaskSchema = z.object({
+  body: taskSchema.shape.body.partial(),
+}).merge(objectIdParamSchema);
+
+export const deleteTaskSchema = objectIdParamSchema;
+

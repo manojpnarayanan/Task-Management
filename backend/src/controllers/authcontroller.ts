@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { IAuthService } from '../interfaces/IAuthService';
 import { HttpStatus } from '../constants/http-status';
 import { Messages } from '../constants/messages';
+import { ApiResponse } from '../utils/api-response';
 
 
 export class authController {
@@ -15,15 +16,15 @@ export class authController {
             res.cookie("token", result.token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: process.env.NODE_ENV === 'production' ?'none' : 'lax',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 maxAge: maxAge,
             });
             const { token, ...userData } = result;
-            res.status(HttpStatus.CREATED).json(userData);
+            ApiResponse.created(res, userData);
         } catch (error: unknown) {
             console.error("Registration error", error);
-            const message = error instanceof Error ? error.message : "Registration failed";
-            res.status(400).json({ message })
+            const message = error instanceof Error ? error.message : Messages.AUTH.REGISTRATION_FAILED;
+            ApiResponse.error(res, message, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -35,20 +36,20 @@ export class authController {
             res.cookie("token", result.token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: process.env.NODE_ENV === 'production' ?'none' : 'lax',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 maxAge: maxAge
             })
             const { token, ...userData } = result;
-            res.status(HttpStatus.OK).json(userData);
+            ApiResponse.success(res, userData);
         } catch (error) {
             console.error("Login error", error);
-            const message = error instanceof Error ? error.message : "Login failed";
-            res.status(401).json({ message })
+            const message = error instanceof Error ? error.message : Messages.AUTH.LOGIN_FAILED;
+            ApiResponse.error(res, message, HttpStatus.UNAUTHORIZED);
         }
     };
     logout = async (req: Request, res: Response) => {
         res.clearCookie("token");
-        res.status(HttpStatus.OK).json({ message: Messages.AUTH.LOGOUT_SUCCESS });
+        ApiResponse.success(res, null, Messages.AUTH.LOGOUT_SUCCESS);
     }
 }
 

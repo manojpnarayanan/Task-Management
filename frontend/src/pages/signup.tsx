@@ -11,7 +11,7 @@ const Signup = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,33 +24,29 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      // await api.post('/auth/register', {
-      //   name: formData.name,
-      //   email: formData.email,
-      //   password: formData.password
-      // });
+
       const data = await authService.register(formData);
       console.log(`User ${data} registerd successfully`);
-       await Swal.fire({
-        title:"Registration successfull",
-        text:"Redirecting to Login..",
-        icon:"success",
-        toast:true,
-        position:"top-end",
-        showConfirmButton:false,
-        timer:2000,
-        timerProgressBar:true,
-        background:"#0f172a",
-        color:'#fff'
+      await Swal.fire({
+        title: "Registration successfull",
+        text: "Redirecting to Login..",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        background: "#0f172a",
+        color: '#fff'
       })
       navigate('/login');
     } catch (err) {
-      if(axios.isAxiosError(err)){
+      if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || 'Something went wrong');
-      }else{
+      } else {
         setError("An unexpected error occurred")
       }
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -62,7 +58,7 @@ const Signup = () => {
         <p className="text-slate-400 mb-8">Start managing your tasks efficiently today.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          
+
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Full Name</label>
             <div className="relative">
@@ -77,7 +73,7 @@ const Signup = () => {
             </div>
           </div>
 
-        
+
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Email Address</label>
             <div className="relative">
@@ -92,7 +88,7 @@ const Signup = () => {
             </div>
           </div>
 
-          
+
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Password</label>
             <div className="relative">
@@ -114,7 +110,7 @@ const Signup = () => {
             </div>
           </div>
 
-          
+
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-1.5">Confirm Password</label>
             <div className="relative">
@@ -137,20 +133,20 @@ const Signup = () => {
 
           <button
             type="submit"
-      disabled={loading}
-      className={`w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all mt-4 group shadow-lg shadow-sky-500/20 ${loading ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
-    >
-      {loading ? (
-        <div className="flex items-center gap-2">
-           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-           Signing up...
-        </div>
-      ) : (
-        <>
-          Sign Up
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </>
-      )}
+            disabled={loading}
+            className={`w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all mt-4 group shadow-lg shadow-sky-500/20 ${loading ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
+          >
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Signing up...
+              </div>
+            ) : (
+              <>
+                Sign Up
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
 
           </button>
         </form>

@@ -16,9 +16,8 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      // const response = await api.post('/auth/login', formData);
-      const response = await authService.login({email:formData.email,password:formData.password})
-      // const { _id } = response._id;
+
+      const response = await authService.login({ email: formData.email, password: formData.password })
       localStorage.setItem('userId', response._id);
       navigate('/dashboard');
     } catch (err) {

@@ -8,16 +8,16 @@ export interface UserResponse {
 
 
 export const authService = {
-    login:async (data:Record<string,string>):Promise<UserResponse>=>{
-        const response=await api.post('auth/login',data);
-        return response.data;
+    login: async (data: Record<string, string>): Promise<UserResponse> => {
+        const response = await api.post('auth/login', data);
+        return response.data.data;
     },
-    register:async (data:Record<string,string>):Promise<UserResponse>=>{
-        const response=await api.post('auth/register',data)
-        return response.data;
+    register: async (data: Record<string, string>): Promise<UserResponse> => {
+        const response = await api.post('auth/register', data)
+        return response.data.data;
     },
-    logout: async ():Promise<{message:string}>=>{
-        const response=await api.post('auth/logout');
+    logout: async (): Promise<{ message: string }> => {
+        const response = await api.post('auth/logout');
         return response.data;
     }
 }

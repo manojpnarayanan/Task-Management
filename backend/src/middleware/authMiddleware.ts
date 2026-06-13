@@ -1,18 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-// import AuthRequest
-import { IUserRepository } from "../interfaces/IUserRepository";
 import { IUser } from "../models/User";
 import { AppError } from "../utils/app-error";
 import { HttpStatus } from "../constants/http-status";
 import { Messages } from "../constants/messages";
 import { IAuthService } from "../interfaces/IAuthService";
 
-
-
-// interface JwtPayload {
-//     id: string;
-// }
 
 export interface AuthRequest extends Request {
     user?: IUser | null;
@@ -32,7 +25,7 @@ export class AuthMiddleware {
         }
 
         if (!token) {
-            throw new AppError(Messages.AUTH.UNAUTHORIZED,HttpStatus.UNAUTHORIZED);
+            throw new AppError(Messages.AUTH.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
         }
 
         try {
@@ -40,13 +33,13 @@ export class AuthMiddleware {
             const user = await this.authService.validateUser(decoded.id);
 
             if (!user) {
-                throw new AppError(Messages.AUTH.USER_NOT_FOUND,HttpStatus.UNAUTHORIZED)
+                throw new AppError(Messages.AUTH.USER_NOT_FOUND, HttpStatus.UNAUTHORIZED)
             }
 
             req.user = user;
             return next();
         } catch (error) {
-            next(new AppError(Messages.AUTH.TOKEN_FAILED,HttpStatus.UNAUTHORIZED));
+            next(new AppError(Messages.AUTH.TOKEN_FAILED, HttpStatus.UNAUTHORIZED));
         }
     }
 }

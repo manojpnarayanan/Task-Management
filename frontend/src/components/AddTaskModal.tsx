@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { X, Type, AlignLeft, Calendar, Flag } from "lucide-react";
+import Swal from "sweetalert2";
 import { taskService } from "../api/task.Api";
 
 
@@ -61,8 +62,32 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onTaskAdde
 
       if (taskToEdit) {
         await taskService.updateTask(taskToEdit._id, formattedData);
+        await Swal.fire({
+          title: "Task Updated",
+          text: "Your task has been successfully updated.",
+          icon: "success",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: "#0f172a",
+          color: '#fff'
+        });
       } else {
         await taskService.createTask(formattedData);
+        await Swal.fire({
+          title: "Task Created",
+          text: "Your new task has been added.",
+          icon: "success",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: "#0f172a",
+          color: '#fff'
+        });
       }
 
       onTaskAdded();
